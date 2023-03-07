@@ -5,20 +5,36 @@ import FilterContacts from "./components/PhoneContacts/FilterContacts";
 import ContactsForm from "./components/PhoneContacts/ContactsForm";
 import ContactsList from "./components/PhoneContacts/ContactsList";
 
-import { info } from "@pnotify/core";
 import "@pnotify/core/dist/BrightTheme.css";
 import "@pnotify/core/dist/PNotify.css";
 
 export default class PhoneBook extends Component {
   state = {
-    contacts: [
-      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-    ],
+    contacts: [],
     filter: "",
   };
+
+  componentDidMount() {
+    console.log("componentDidMount");
+
+    const persistedContacts = localStorage.getItem("contacts");
+
+    if (persistedContacts) {
+      console.log("persistedContacts", persistedContacts);
+
+      this.setState({
+        contacts: JSON.parse(persistedContacts),
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log("componentDidUpdate");
+
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
+    }
+  }
 
   changeFilter = (filter) => {
     // const { contacts } = this.state;
@@ -87,7 +103,7 @@ export default class PhoneBook extends Component {
 
         <h2>Contacts:</h2>
         {visibleContacts.length === 0 && (
-          <h2>No contact in your contact-book</h2>
+          <h2>No contacts in your contact-book</h2>
         )}
         {visibleContacts.length > 0 && (
           <ContactsList
